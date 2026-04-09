@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Infraestructura base para análisis de ventas de cafeterías.
+
+Resources:
+  # 1. Bucket S3 para recibir los CSV
+  BucketVentasCafeteria:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub "ventas-cafeteria-raw-${AWS::AccountId}" # Nombre único
+
+  # 2. Tabla DynamoDB para resultados agregados
+  TablaKPIsVentas:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: VentasDiariasKpis
+      AttributeDefinitions:
+        - AttributeName: TiendaID
+          AttributeType: S
+        - AttributeName: Fecha
+          AttributeType: S
+      KeySchema:
+        - AttributeName: TiendaID # Partition Key
+          KeyType: HASH
+        - AttributeName: Fecha    # Sort Key
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
